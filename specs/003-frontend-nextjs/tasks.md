@@ -21,14 +21,14 @@
 
 **Purpose**: Initialize Next.js project, configure dependencies, set up project structure
 
-- [ ] T001 Initialize Next.js 16+ project with TypeScript, TailwindCSS, ESLint, and App Router using `npx create-next-app@latest frontend --typescript --tailwind --eslint --app`
-- [ ] T002 Initialize TypeScript configuration in `frontend/tsconfig.json` with strict mode enabled
-- [ ] T003 [P] Configure Tailwind CSS in `frontend/tailwind.config.js` with custom theme and breakpoints
-- [ ] T004 [P] Configure Next.js in `frontend/next.config.js` with App Router settings
-- [ ] T005 Create `.env.example` with required environment variables (NEXT_PUBLIC_API_BASE_URL, NEXT_PUBLIC_BETTER_AUTH_SECRET)
-- [ ] T006 [P] Create project folder structure: app/, components/, lib/, public/, styles/ per plan.md
-- [ ] T007 Initialize package.json dependencies (better-auth, tailwindcss, typescript)
-- [ ] T008 Create `frontend/README.md` with setup and running instructions
+- [x] T001 Initialize Next.js 16+ project with TypeScript, TailwindCSS, ESLint, and App Router
+- [x] T002 Initialize TypeScript configuration in `frontend/tsconfig.json` with strict mode enabled
+- [x] T003 [P] Configure Tailwind CSS in `frontend/tailwind.config.ts` with custom theme and breakpoints
+- [x] T004 [P] Configure Next.js in `frontend/next.config.ts` with App Router settings
+- [x] T005 Create `.env.example` with required environment variables (NEXT_PUBLIC_API_BASE_URL, NEXT_PUBLIC_BETTER_AUTH_SECRET)
+- [x] T006 [P] Create project folder structure: app/, components/, lib/, public/, styles/ per plan.md
+- [x] T007 Initialize package.json dependencies (better-auth, tailwindcss, typescript)
+- [x] T008 Create `frontend/README.md` with setup and running instructions
 
 **Checkpoint**: Next.js project initialized and ready for foundational infrastructure
 
@@ -40,31 +40,31 @@
 
 **⚠️ CRITICAL**: All tasks in this phase must complete before any user story implementation begins
 
-- [ ] T009 [P] Create auth context in `frontend/src/lib/auth/auth-context.tsx` with AuthContext interface and provider
-- [ ] T010 [P] Create `frontend/src/lib/auth/useAuth.ts` custom hook to access auth context from components
-- [ ] T011 [P] Create `frontend/src/lib/api/types.ts` with TypeScript types for API responses (User, Task, AuthError)
-- [ ] T012 [P] Create centralized API client in `frontend/src/lib/api/client.ts` with:
+- [x] T009 [P] Create auth context in `frontend/src/lib/auth/auth-context.tsx` with AuthContext interface and provider
+- [x] T010 [P] Create `frontend/src/lib/auth/useAuth.ts` custom hook to access auth context from components
+- [x] T011 [P] Create `frontend/src/lib/api/types.ts` with TypeScript types for API responses (User, Task, AuthError)
+- [x] T012 [P] Create centralized API client in `frontend/src/lib/api/client.ts` with:
   - Fetch wrapper with automatic Authorization header injection
   - 401 error handling (redirect to signin)
   - JSON parsing and error serialization
   - Base URL from NEXT_PUBLIC_API_BASE_URL
-- [ ] T013 Create `frontend/src/lib/auth/better-auth-config.ts` with Better Auth initialization and JWT configuration
-- [ ] T014 Create `frontend/src/lib/auth/jwt-storage.ts` with JWT token storage/retrieval functions (HttpOnly cookie strategy)
-- [ ] T015 [P] Create global error boundary in `frontend/src/app/error.tsx` for error handling
-- [ ] T016 [P] Create global styles in `frontend/src/styles/globals.css` with Tailwind directives and base styles
-- [ ] T017 [P] Create CSS variables in `frontend/src/styles/variables.css` for theme colors and spacing
-- [ ] T018 Create `frontend/src/middleware.ts` for Next.js route protection (redirect unauthenticated users to signin)
-- [ ] T019 [P] Create reusable UI components:
+- [x] T013 Create `frontend/src/lib/auth/better-auth-config.ts` with Better Auth initialization and JWT configuration
+- [x] T014 Create `frontend/src/lib/auth/jwt-storage.ts` with JWT token storage/retrieval functions (HttpOnly cookie strategy)
+- [x] T015 [P] Create global error boundary in `frontend/src/app/error.tsx` for error handling
+- [x] T016 [P] Create global styles in `frontend/src/styles/globals.css` with Tailwind directives and base styles
+- [x] T017 [P] Create CSS variables in `frontend/src/styles/variables.css` for theme colors and spacing
+- [x] T018 Create `frontend/src/middleware.ts` for Next.js route protection (redirect unauthenticated users to signin)
+- [x] T019 [P] Create reusable UI components:
   - `frontend/src/components/common/Button.tsx` (responsive, accessible button)
   - `frontend/src/components/common/Input.tsx` (form input with validation feedback)
   - `frontend/src/components/common/ErrorAlert.tsx` (error message display)
   - `frontend/src/components/common/LoadingSpinner.tsx` (loading indicator)
-- [ ] T020 [P] Create layout components:
+- [x] T020 [P] Create layout components:
   - `frontend/src/components/layout/Container.tsx` (responsive container wrapper)
   - `frontend/src/components/layout/ResponsiveGrid.tsx` (grid layout)
-- [ ] T021 Create validation utilities in `frontend/src/lib/validation/auth.ts` (email, password validation rules)
-- [ ] T022 [P] Create validation utilities in `frontend/src/lib/validation/tasks.ts` (task title/description validation)
-- [ ] T023 [P] Create utility functions:
+- [x] T021 Create validation utilities in `frontend/src/lib/validation/auth.ts` (email, password validation rules)
+- [x] T022 [P] Create validation utilities in `frontend/src/lib/validation/tasks.ts` (task title/description validation)
+- [x] T023 [P] Create utility functions:
   - `frontend/src/utils/classnames.ts` (conditional CSS classes)
   - `frontend/src/utils/formatting.ts` (date formatting, text truncation)
 
