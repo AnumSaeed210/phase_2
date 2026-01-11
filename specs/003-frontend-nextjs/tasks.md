@@ -78,22 +78,22 @@
 
 **Independent Test**: Can be fully verified by (1) visiting /auth/signup, (2) entering valid email and password, (3) confirming form submits to Better Auth, (4) verifying JWT token is stored, (5) confirming redirect to /tasks (US3), (6) confirming error handling for duplicate email and invalid password
 
-- [ ] T024 [P] [US1] Create sign-up form validation in `frontend/src/lib/validation/auth.ts`:
+- [x] T024 [P] [US1] Create sign-up form validation in `frontend/src/lib/validation/auth.ts`:
   - Email format validation
   - Password minimum 8 characters
   - Real-time error message display
-- [ ] T025 [US1] Create `frontend/src/components/auth/SignUpForm.tsx` component with:
+- [x] T025 [US1] Create `frontend/src/components/auth/SignUpForm.tsx` component with:
   - Email and password inputs
   - Client-side validation with error messages
   - Submit button with loading state
   - "Already have an account?" link to signin
-- [ ] T026 [US1] Create `frontend/src/app/(auth)/layout.tsx` with centered form layout (no navbar)
-- [ ] T027 [US1] Create `frontend/src/app/(auth)/signup/page.tsx` page with:
+- [x] T026 [US1] Create `frontend/src/app/(auth)/layout.tsx` with centered form layout (no navbar)
+- [x] T027 [US1] Create `frontend/src/app/(auth)/signup/page.tsx` page with:
   - SignUpForm component
   - Better Auth sign-up call on form submit
   - Error display from Better Auth
   - Redirect to /tasks on success
-- [ ] T028 [US1] Integrate Better Auth in `frontend/src/lib/auth/auth-context.tsx`:
+- [x] T028 [US1] Integrate Better Auth in `frontend/src/lib/auth/auth-context.tsx`:
   - signUp function calling Better Auth
   - JWT token storage after signup
   - Global loading state during signup
@@ -109,22 +109,22 @@
 
 **Independent Test**: Can be fully verified by (1) visiting /auth/signin, (2) entering valid email and password, (3) confirming JWT token is stored, (4) confirming redirect to /tasks, (5) verifying token is included in subsequent API requests
 
-- [ ] T029 [P] [US2] Create `frontend/src/components/auth/SignInForm.tsx` component with:
+- [x] T029 [P] [US2] Create `frontend/src/components/auth/SignInForm.tsx` component with:
   - Email and password inputs
   - Client-side validation with error messages
   - Submit button with loading state
   - "Don't have an account?" link to signup
-- [ ] T030 [US2] Create `frontend/src/app/(auth)/signin/page.tsx` page with:
+- [x] T030 [US2] Create `frontend/src/app/(auth)/signin/page.tsx` page with:
   - SignInForm component
   - Better Auth sign-in call on form submit
   - Error display from Better Auth
   - Redirect to /tasks on success
   - Redirect to /auth/signup if accessing without account
-- [ ] T031 [US2] Extend Better Auth in auth context with:
+- [x] T031 [US2] Extend Better Auth in auth context with:
   - signIn function calling Better Auth
   - JWT token storage after signin
   - Error handling for invalid credentials
-- [ ] T032 [US2] Create `frontend/src/lib/auth/useAuth.ts` to expose:
+- [x] T032 [US2] Create `frontend/src/lib/auth/useAuth.ts` to expose:
   - currentUser (from JWT)
   - isAuthenticated (boolean)
   - signIn/signUp/signOut functions
@@ -140,31 +140,31 @@
 
 **Independent Test**: Can be fully verified by (1) signing in successfully, (2) confirming redirect to /tasks, (3) confirming GET /api/{user_id}/tasks is called with JWT token, (4) displaying all user's tasks in UI, (5) showing empty state when no tasks, (6) verifying multi-user isolation (different users see different tasks)
 
-- [ ] T033 [P] [US3] Create `frontend/src/lib/hooks/useAsync.ts` custom hook for managing async state:
+- [x] T033 [P] [US3] Create `frontend/src/lib/hooks/useAsync.ts` custom hook for managing async state:
   - Loading state
   - Error state
   - Data state
   - Retry logic
-- [ ] T034 [P] [US3] Create `frontend/src/lib/hooks/useTasks.ts` custom hook with:
+- [x] T034 [P] [US3] Create `frontend/src/lib/hooks/useTasks.ts` custom hook with:
   - fetchTasks(userId) - GET /api/{user_id}/tasks
   - createTask(userId, data) - POST (for US4)
   - updateTask(userId, id, data) - PUT (for US5)
   - deleteTask(userId, id) - DELETE (for US7)
   - completeTask(userId, id) - PATCH (for US6)
-- [ ] T035 [P] [US3] Create task UI components:
+- [x] T035 [P] [US3] Create task UI components:
   - `frontend/src/components/tasks/TaskList.tsx` - renders array of TaskItem components
   - `frontend/src/components/tasks/TaskItem.tsx` - single task display with title, status, date
   - `frontend/src/components/tasks/EmptyState.tsx` - "No tasks yet" message with create button
-- [ ] T036 [US3] Create `frontend/src/app/(dashboard)/layout.tsx` with:
+- [x] T036 [US3] Create `frontend/src/app/(dashboard)/layout.tsx` with:
   - Navbar component with user info and sign-out button
   - Main content area
   - Responsive layout
-- [ ] T037 [US3] Create `frontend/src/components/common/Navbar.tsx` with:
+- [x] T037 [US3] Create `frontend/src/components/common/Navbar.tsx` with:
   - Current user info display
   - Sign-out button
   - Logo and branding
   - Responsive mobile menu (hamburger)
-- [ ] T038 [US3] Create `frontend/src/app/(dashboard)/tasks/page.tsx` with:
+- [x] T038 [US3] Create `frontend/src/app/(dashboard)/tasks/page.tsx` with:
   - useTasks hook to fetch tasks
   - Display TaskList or EmptyState based on tasks array
   - Loading spinner while fetching
@@ -181,23 +181,23 @@
 
 **Independent Test**: Can be fully verified by (1) signing in, (2) visiting /tasks or /tasks/new, (3) accessing task creation form, (4) entering task title and submitting, (5) confirming POST request includes JWT token, (6) verifying new task appears in list, (7) validating empty title is rejected
 
-- [ ] T039 [P] [US4] Create `frontend/src/components/tasks/TaskForm.tsx` component with:
+- [x] T039 [P] [US4] Create `frontend/src/components/tasks/TaskForm.tsx` component with:
   - Title input (required)
   - Description textarea (optional)
   - Submit and cancel buttons
   - Loading state during submission
   - Error display
   - Pre-populated fields for editing (for US5)
-- [ ] T040 [US4] Create `frontend/src/app/(dashboard)/tasks/new/page.tsx` page with:
+- [x] T040 [US4] Create `frontend/src/app/(dashboard)/tasks/new/page.tsx` page with:
   - TaskForm component
   - useTasks.createTask on form submit
   - Redirect to /tasks on success
   - Show error if creation fails
-- [ ] T041 [US4] Extend task list page with:
+- [x] T041 [US4] Extend task list page with:
   - "Create Task" button on task list page
   - Click opens modal or navigates to /tasks/new
   - After creation, task appears in list or list is refreshed
-- [ ] T042 [US4] Update useTasks hook to:
+- [x] T042 [US4] Update useTasks hook to:
   - Implement createTask function
   - Handle optimistic UI update (show new task immediately)
   - Handle API response with created task ID
@@ -212,16 +212,16 @@
 
 **Independent Test**: Can be fully verified by (1) creating a task (US4), (2) clicking edit on task, (3) updating title/description, (4) confirming PUT request, (5) verifying task list updated without refresh
 
-- [ ] T043 [P] [US5] Create `frontend/src/app/(dashboard)/tasks/[taskId]/page.tsx` with:
+- [x] T043 [P] [US5] Create `frontend/src/app/(dashboard)/tasks/[taskId]/page.tsx` with:
   - Fetch single task on load
   - TaskForm component in edit mode (populated with task data)
   - useTasks.updateTask on form submit
   - Redirect to /tasks on success
   - Show 404 if task not found
-- [ ] T044 [US5] Update TaskItem component with:
+- [x] T044 [US5] Update TaskItem component with:
   - Edit button that navigates to /tasks/{id}
   - Show error if task is deleted while editing
-- [ ] T045 [US5] Extend useTasks hook with:
+- [x] T045 [US5] Extend useTasks hook with:
   - updateTask function (PUT /api/{user_id}/tasks/{id})
   - Handle 404 (task belongs to different user)
   - Optimistic UI update
@@ -236,11 +236,11 @@
 
 **Independent Test**: Can be fully verified by (1) creating a task (US4), (2) clicking completion checkbox, (3) confirming PATCH request, (4) verifying UI updates, (5) clicking again to mark incomplete
 
-- [ ] T046 [P] [US6] Update TaskItem component with:
+- [x] T046 [P] [US6] Update TaskItem component with:
   - Completion checkbox/button
   - Visual styling for completed tasks (strikethrough)
   - Disable during request
-- [ ] T047 [US6] Extend useTasks hook with:
+- [x] T047 [US6] Extend useTasks hook with:
   - completeTask function (PATCH /api/{user_id}/tasks/{id}/complete)
   - Optimistic UI update (toggle checkbox immediately)
   - Error rollback if API fails
@@ -255,11 +255,11 @@
 
 **Independent Test**: Can be fully verified by (1) creating a task (US4), (2) clicking delete button, (3) confirming deletion, (4) verifying task removed from list, (5) verifying DELETE request sent
 
-- [ ] T048 [P] [US7] Update TaskItem component with:
+- [x] T048 [P] [US7] Update TaskItem component with:
   - Delete button with confirmation dialog
   - Disable button during deletion
   - Show error if deletion fails
-- [ ] T049 [US7] Extend useTasks hook with:
+- [x] T049 [US7] Extend useTasks hook with:
   - deleteTask function (DELETE /api/{user_id}/tasks/{id})
   - Remove task from list optimistically
   - Error rollback if API fails
@@ -274,15 +274,15 @@
 
 **Independent Test**: Can be fully verified by (1) signing in, (2) clicking sign-out button, (3) confirming JWT token cleared, (4) verifying redirect to /auth/signin, (5) confirming protected routes inaccessible without token
 
-- [ ] T050 [P] [US8] Create `frontend/src/app/(dashboard)/profile/page.tsx` page with:
+- [x] T050 [P] [US8] Create `frontend/src/app/(dashboard)/profile/page.tsx` page with:
   - User profile info display
   - Sign-out button
   - Simple layout
-- [ ] T051 [US8] Update Navbar component to:
+- [x] T051 [US8] Update Navbar component to:
   - Show "Sign Out" option (or link to profile)
   - Call signOut on click
   - Redirect to /auth/signin
-- [ ] T052 [US8] Extend auth context with:
+- [x] T052 [US8] Extend auth context with:
   - signOut function that:
     - Calls Better Auth sign-out
     - Clears JWT token from storage
