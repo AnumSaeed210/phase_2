@@ -45,6 +45,7 @@ def create_task(
     - **user_id**: Authenticated user ID from JWT context
     - **title**: Task title (required, 1-255 characters)
     - **description**: Task description (optional, max 5000 characters)
+    - **priority**: Task priority (optional, defaults to "medium"; low|medium|high)
 
     Returns 201 Created with complete task metadata including auto-generated ID and timestamps.
     """
@@ -68,11 +69,12 @@ def create_task(
             detail={"error": "Description must be 5000 characters or less"}
         )
 
-    # Create task
+    # Create task (priority validation already done by schema)
     task = service.create_task(
         user_id=user_id,
         title=task_create.title,
-        description=task_create.description
+        description=task_create.description,
+        priority=task_create.priority
     )
 
     return TaskResponse.model_validate(task)
@@ -96,6 +98,7 @@ def create_task(
 def list_tasks(
     user_id: str,
     status: Optional[str] = Query(None, description="Filter by status (incomplete|complete)"),
+    sort: Optional[str] = Query(None, description="Sort option (priority for priority sorting)"),
     service: TaskService = Depends(get_task_service),
     current_user: AuthenticatedUser = Depends(verify_path_user_id)
 ) -> List[TaskResponse]:
@@ -104,6 +107,7 @@ def list_tasks(
 
     - **user_id**: Authenticated user ID from JWT context
     - **status**: Optional filter (incomplete or complete)
+    - **sort**: Optional sort parameter (priority for High→Medium→Low ordering)
 
     Returns array of tasks owned by the user, filtered by optional status parameter.
     Returns empty array [] if user has no tasks.
@@ -115,7 +119,14 @@ def list_tasks(
             detail={"error": "Invalid status value. Must be 'incomplete' or 'complete'"}
         )
 
-    tasks = service.get_tasks_for_user(user_id, status)
+    # Validate sort parameter
+    if sort and sort not in ["priority"]:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "Invalid sort value. Must be 'priority' or omitted"}
+        )
+
+    tasks = service.get_tasks_for_user(user_id, status, sort)
     return [TaskResponse.model_validate(task) for task in tasks]
 
 
@@ -194,12 +205,13 @@ def update_task(
     current_user: AuthenticatedUser = Depends(verify_path_user_id)
 ) -> TaskResponse:
     """
-    Update a task's title and/or description
+    Update a task's title, description, and/or priority
 
     - **user_id**: Authenticated user ID from JWT context
     - **id**: Task ID (numeric)
     - **title**: New title (optional, 1-255 characters)
     - **description**: New description (optional, max 5000 characters)
+    - **priority**: New priority (optional; low|medium|high)
 
     At least one field must be provided.
     Returns updated task with new updated_at timestamp.
@@ -215,10 +227,10 @@ def update_task(
         )
 
     # Validate at least one field provided
-    if task_update.title is None and task_update.description is None:
+    if task_update.title is None and task_update.description is None and task_update.priority is None:
         raise HTTPException(
             status_code=400,
-            detail={"error": "At least one field (title or description) must be provided"}
+            detail={"error": "At least one field (title, description, or priority) must be provided"}
         )
 
     # Validate title if provided
@@ -241,12 +253,13 @@ def update_task(
             detail={"error": "Description must be 5000 characters or less"}
         )
 
-    # Update task
+    # Update task (priority validation already done by schema)
     task = service.update_task(
         task_id=task_id,
         user_id=user_id,
         title=task_update.title,
-        description=task_update.description
+        description=task_update.description,
+        priority=task_update.priority
     )
 
     if not task:
