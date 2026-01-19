@@ -1,29 +1,45 @@
-import Link from 'next/link'
+/**
+ * Home / Landing Page
+ * Main entry point for unauthenticated users
+ * Displays the landing page with product information
+ */
+
+import { LandingHeader } from '@/components/landing/LandingHeader'
+import { Hero } from '@/components/landing/Hero'
+import { Features } from '@/components/landing/Features'
+import { ValueProp } from '@/components/landing/ValueProp'
+import { LandingCTA } from '@/components/landing/LandingCTA'
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md space-y-8 text-center">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900">Taskie</h1>
-          <p className="mt-2 text-gray-600">Manage your tasks with ease</p>
-        </div>
+    <div className="min-h-screen bg-white">
+      <LandingHeader />
+      <Hero />
+      <Features />
+      <ValueProp />
+      <LandingCTA />
 
-        <div className="space-y-4">
-          <Link
-            href="/auth/signin"
-            className="block w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/auth/signup"
-            className="block w-full rounded-lg bg-gray-200 px-4 py-2 font-medium text-gray-900 hover:bg-gray-300"
-          >
-            Sign Up
-          </Link>
+      {/* Footer */}
+      <footer className="bg-slate-light py-8 px-4 sm:px-6 lg:px-8 border-t border-slate-dark">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <p className="text-slate-light text-sm">
+              &copy; 2025 Taskie. All rights reserved.
+            </p>
+            <div className="mt-4 flex gap-6 justify-center">
+              <a href="/privacy" className="text-slate-light hover:text-slate transition-colors text-sm">
+                Privacy Policy
+              </a>
+              <a href="/terms" className="text-slate-light hover:text-slate transition-colors text-sm">
+                Terms of Service
+              </a>
+              <a href="/contact" className="text-slate-light hover:text-slate transition-colors text-sm">
+                Contact
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
-    </main>
+      </footer>
+    </div>
   )
 }

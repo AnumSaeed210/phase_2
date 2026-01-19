@@ -186,3 +186,55 @@ class TaskService:
         self.session.commit()
         self.session.refresh(task)
         return task
+
+    def mark_incomplete(self, task_id: int, user_id: str) -> Optional[Task]:
+        """
+        Mark a task as incomplete with ownership verification
+
+        Args:
+            task_id: Task ID to mark incomplete
+            user_id: Authenticated user ID for ownership check
+
+        Returns:
+            Updated Task object if found and owned by user, None otherwise
+        """
+        task = self.get_task_by_id(task_id, user_id)
+        if not task:
+            return None
+
+        task.status = "incomplete"
+        task.updated_at = datetime.now(timezone.utc)
+        self.session.add(task)
+        self.session.commit()
+        self.session.refresh(task)
+        return task
+
+    def update_status(self, task_id: int, user_id: str, status: str) -> Optional[Task]:
+        """
+        Update task status with ownership verification
+
+        Args:
+            task_id: Task ID to update
+            user_id: Authenticated user ID for ownership check
+            status: New status ('complete' or 'incomplete')
+
+        Returns:
+            Updated Task object if found and owned by user, None otherwise
+        """
+        task = self.get_task_by_id(task_id, user_id)
+        if not task:
+            return None
+
+        normalized_status = status.lower().strip()
+        if normalized_status not in ["complete", "incomplete"]:
+            raise ValueError("Status must be 'complete' or 'incomplete'")
+
+        task.status = normalized_status
+        task.updated_at = datetime.now(timezone.utc)
+        self.session.add(task)
+        self.session.commit()
+        self.session.refresh(task)
+
+        action = "marked complete" if normalized_status == "complete" else "marked incomplete"
+        logger.info(f"Task {task_id} {action} for user {user_id}")
+        return task

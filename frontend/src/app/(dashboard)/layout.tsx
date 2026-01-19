@@ -4,11 +4,11 @@
  */
 
 import { ReactNode } from 'react'
-import { Navbar } from '@/src/components/common/Navbar'
+import { Navbar } from '@/components/common/Navbar'
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main className="py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>

@@ -54,23 +54,18 @@ NEON_POOL_CONFIG = {
     # Neon's PgBouncer handles connection multiplexing
     # Lower pool size reduces compute unit consumption
     "pool_size": 10,
-
     # Max overflow: Additional connections beyond pool_size
     # Set to 5 for burst traffic handling
     "max_overflow": 5,
-
     # Pool timeout: Wait time for connection acquisition (seconds)
     # 30 seconds is reasonable for serverless workloads
     "pool_timeout": 30,
-
     # Pool recycle: Recycle connections after this many seconds
     # 3600 seconds (1 hour) prevents stale connections in serverless
     "pool_recycle": 3600,
-
     # Pool pre-ping: Test connections before using (prevents stale connections)
     # Enabled for Neon to handle serverless compute scaling
     "pool_pre_ping": True,
-
     # Echo: Log all SQL queries (disable in production for performance)
     "echo": os.getenv("DEBUG", "false").lower() == "true",
 }
@@ -101,10 +96,14 @@ def create_neon_engine():
         pool_recycle=NEON_POOL_CONFIG["pool_recycle"],
         pool_pre_ping=NEON_POOL_CONFIG["pool_pre_ping"],
         # Neon-specific: Ensure SSL connections
-        connect_args={
-            "sslmode": "require",
-            "connect_timeout": 10,  # Connection timeout in seconds
-        } if is_neon else {},
+        connect_args=(
+            {
+                "sslmode": "require",
+                "connect_timeout": 10,  # Connection timeout in seconds
+            }
+            if is_neon
+            else {}
+        ),
     )
 
 
@@ -137,9 +136,11 @@ if is_sqlite:
 else:
     engine = create_neon_engine()
     print(f"[DATABASE] Using Neon Serverless PostgreSQL")
-    print(f"[DATABASE] Connection pool: size={NEON_POOL_CONFIG['pool_size']}, "
-          f"max_overflow={NEON_POOL_CONFIG['max_overflow']}, "
-          f"recycle={NEON_POOL_CONFIG['pool_recycle']}s")
+    print(
+        f"[DATABASE] Connection pool: size={NEON_POOL_CONFIG['pool_size']}, "
+        f"max_overflow={NEON_POOL_CONFIG['max_overflow']}, "
+        f"recycle={NEON_POOL_CONFIG['pool_recycle']}s"
+    )
 
 
 # Event listener for connection pool monitoring (optional, useful for debugging)

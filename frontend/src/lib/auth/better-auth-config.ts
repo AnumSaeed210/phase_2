@@ -1,25 +1,37 @@
 /**
  * Better Auth Configuration
- * Initialize Better Auth with JWT configuration
+ * Minimal configuration for JWT-based authentication
+ *
+ * NOTE: This app uses a custom backend authentication implementation:
+ * - Signup: POST /auth/signup
+ * - Signin: POST /auth/signin
+ * - Signout: POST /auth/signout
+ *
+ * JWT tokens are managed via:
+ * - Storage: localStorage (jwt-storage.ts)
+ * - Injection: API client adds Authorization header (api/client.ts)
+ * - Validation: Backend validates JWT on protected endpoints
  */
 
-// This file will be used to configure Better Auth
-// For now, we'll export a placeholder for the client configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
 
-export const betterAuthConfig = {
-  apiUrl: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:3000',
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
-  // JWT configuration will be handled by Better Auth server
-  // Client signs in via /api/auth/signin -> Better Auth issues JWT -> stored in HttpOnly cookie
+export const authConfig = {
+  apiBaseUrl: API_BASE_URL,
+  endpoints: {
+    signup: `${API_BASE_URL}/auth/signup`,
+    signin: `${API_BASE_URL}/auth/signin`,
+    signout: `${API_BASE_URL}/auth/signout`,
+  },
+  tokenConfig: {
+    expirationDays: 7,
+    storageKey: 'auth_token',
+  },
+  redirects: {
+    afterSignin: '/tasks',
+    afterSignup: '/tasks',
+    afterSignout: '/signin',
+    unauthorized: '/signin',
+  },
 }
 
-/**
- * Better Auth client initialization
- * This would typically call better-auth's client setup
- * For now, we reference it for API calls
- */
-export function initBetterAuth() {
-  // Initialize Better Auth client
-  // The actual implementation depends on better-auth version
-  // Typically: createBetterAuthClient({ baseURL: betterAuthConfig.baseURL })
-}
+export type AuthConfig = typeof authConfig

@@ -1,6 +1,19 @@
 import type { Metadata } from 'next'
-import { AuthProvider } from '@/src/lib/auth/auth-context'
-import '@/src/styles/globals.css'
+import { Space_Grotesk, Roboto } from 'next/font/google'
+import { AuthProvider } from '@/lib/auth/auth-context'
+import '@/styles/globals.css'
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  weight: ['400', '500', '600', '700'],
+})
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  variable: '--font-roboto',
+  weight: ['400', '500', '700'],
+})
 
 export const metadata: Metadata = {
   title: 'Taskie - Todo App',
@@ -13,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${spaceGrotesk.className} ${roboto.className}`}>
       <body>
         <AuthProvider>{children}</AuthProvider>
       </body>

@@ -12,8 +12,20 @@ import { apiClient } from '@/lib/api/client'
 
 /**
  * Transform task from API (snake_case) to frontend (camelCase)
+ * Ensures timestamps are properly parsed as UTC
  */
 function transformTask(task: any): Task {
+  // Ensure timestamps are in UTC by appending Z if missing
+  const normalizeTimestamp = (timestamp: string | undefined): string => {
+    if (!timestamp) return new Date().toISOString()
+    const str = String(timestamp)
+    // If it doesn't have timezone info, assume it's UTC
+    if (!str.includes('Z') && !str.includes('+') && !str.includes('-00:00')) {
+      return `${str}Z`
+    }
+    return str
+  }
+
   return {
     id: String(task.id),
     userId: task.user_id,
@@ -21,8 +33,8 @@ function transformTask(task: any): Task {
     description: task.description,
     completed: task.status === 'complete',
     priority: task.priority,
-    createdAt: task.created_at,
-    updatedAt: task.updated_at,
+    createdAt: normalizeTimestamp(task.created_at),
+    updatedAt: normalizeTimestamp(task.updated_at),
   }
 }
 
@@ -34,6 +46,7 @@ export interface UseTasksResult {
   createTask: (userId: string, data: CreateTaskRequest) => Promise<Task>
   updateTask: (userId: string, taskId: string, data: UpdateTaskRequest) => Promise<Task>
   completeTask: (userId: string, taskId: string) => Promise<Task>
+  incompleteTask: (userId: string, taskId: string) => Promise<Task>
   deleteTask: (userId: string, taskId: string) => Promise<void>
   clearError: () => void
 }
@@ -123,8 +136,8 @@ export function useTasks(): UseTasksResult {
 
       try {
         const updatedTaskData = await apiClient.patch<any>(
-          `/api/${userId}/tasks/${taskId}/complete`,
-          {}
+          `/api/${userId}/tasks/${taskId}/status`,
+          { status: 'complete' }
         )
         const updatedTask = transformTask(updatedTaskData)
 
@@ -136,6 +149,35 @@ export function useTasks(): UseTasksResult {
         return updatedTask
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to complete task'
+        setError(message)
+        throw err
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    []
+  )
+
+  const incompleteTask = useCallback(
+    async (userId: string, taskId: string): Promise<Task> => {
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const updatedTaskData = await apiClient.patch<any>(
+          `/api/${userId}/tasks/${taskId}/status`,
+          { status: 'incomplete' }
+        )
+        const updatedTask = transformTask(updatedTaskData)
+
+        // Optimistic update
+        setTasks((prev) =>
+          prev.map((task) => (task.id === taskId ? updatedTask : task))
+        )
+
+        return updatedTask
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to mark task incomplete'
         setError(message)
         throw err
       } finally {
@@ -174,6 +216,7 @@ export function useTasks(): UseTasksResult {
     createTask,
     updateTask,
     completeTask,
+    incompleteTask,
     deleteTask,
     clearError,
   }

@@ -35,7 +35,6 @@ export function useAsync<T>(
     try {
       const response = await asyncFunction()
       setState({ status: 'success', data: response, error: null })
-      return response as T
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       setState({ status: 'error', data: null, error: err })

@@ -5,6 +5,7 @@
  */
 
 import { AuthError, ApiResponse } from './types'
+import { getToken, clearToken } from '@/lib/auth/jwt-storage'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
 
@@ -20,14 +21,14 @@ class ApiClient {
   }
 
   /**
-   * Get JWT token from storage
-   * Token is stored in HttpOnly cookie (set by backend via Set-Cookie)
-   * For XHR requests, credentials: 'include' sends the cookie automatically
+   * Get JWT token from localStorage and create Authorization header
    */
-  private async getAuthHeader(): Promise<string | null> {
+  private getAuthHeader(): string | null {
     try {
-      // Token is in HttpOnly cookie, no need to read it directly
-      // The browser will send it automatically with credentials: 'include'
+      const token = getToken()
+      if (token) {
+        return `Bearer ${token}`
+      }
       return null
     } catch {
       return null
@@ -48,10 +49,11 @@ class ApiClient {
       data = await response.text()
     }
 
-    // Handle 401 - Redirect to signin
+    // Handle 401 - Clear token and redirect to signin
     if (response.status === 401) {
+      clearToken()
       if (typeof window !== 'undefined') {
-        window.location.href = '/auth/signin'
+        window.location.href = '/signin'
       }
       const error: AuthError = {
         code: 'UNAUTHORIZED',
@@ -63,8 +65,11 @@ class ApiClient {
     // Handle other error status codes
     if (!response.ok) {
       let error: AuthError
-      if (typeof data === 'object' && data !== null && 'error' in data) {
-        error = data.error as AuthError
+      if (typeof data === 'object' && data !== null && 'detail' in data) {
+        error = {
+          code: `HTTP_${response.status}`,
+          message: (data as Record<string, unknown>).detail as string,
+        }
       } else {
         error = {
           code: `HTTP_${response.status}`,
@@ -87,11 +92,16 @@ class ApiClient {
       ...options?.headers,
     }
 
+    // Add Authorization header if token exists
+    const authHeader = this.getAuthHeader()
+    if (authHeader) {
+      (headers as Record<string, string>)['Authorization'] = authHeader
+    }
+
     const response = await fetch(url, {
       ...options,
       method: 'GET',
       headers,
-      credentials: 'include', // Send HttpOnly cookies
     })
 
     return this.handleResponse<T>(response)
@@ -111,12 +121,17 @@ class ApiClient {
       ...options?.headers,
     }
 
+    // Add Authorization header if token exists
+    const authHeader = this.getAuthHeader()
+    if (authHeader) {
+      (headers as Record<string, string>)['Authorization'] = authHeader
+    }
+
     const response = await fetch(url, {
       ...options,
       method: 'POST',
       headers,
       body: body ? JSON.stringify(body) : undefined,
-      credentials: 'include', // Send HttpOnly cookies
     })
 
     return this.handleResponse<T>(response)
@@ -136,12 +151,17 @@ class ApiClient {
       ...options?.headers,
     }
 
+    // Add Authorization header if token exists
+    const authHeader = this.getAuthHeader()
+    if (authHeader) {
+      (headers as Record<string, string>)['Authorization'] = authHeader
+    }
+
     const response = await fetch(url, {
       ...options,
       method: 'PUT',
       headers,
       body: body ? JSON.stringify(body) : undefined,
-      credentials: 'include', // Send HttpOnly cookies
     })
 
     return this.handleResponse<T>(response)
@@ -161,12 +181,17 @@ class ApiClient {
       ...options?.headers,
     }
 
+    // Add Authorization header if token exists
+    const authHeader = this.getAuthHeader()
+    if (authHeader) {
+      (headers as Record<string, string>)['Authorization'] = authHeader
+    }
+
     const response = await fetch(url, {
       ...options,
       method: 'PATCH',
       headers,
       body: body ? JSON.stringify(body) : undefined,
-      credentials: 'include', // Send HttpOnly cookies
     })
 
     return this.handleResponse<T>(response)
@@ -182,11 +207,16 @@ class ApiClient {
       ...options?.headers,
     }
 
+    // Add Authorization header if token exists
+    const authHeader = this.getAuthHeader()
+    if (authHeader) {
+      (headers as Record<string, string>)['Authorization'] = authHeader
+    }
+
     const response = await fetch(url, {
       ...options,
       method: 'DELETE',
       headers,
-      credentials: 'include', // Send HttpOnly cookies
     })
 
     return this.handleResponse<T>(response)

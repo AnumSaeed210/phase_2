@@ -1,10 +1,11 @@
 /**
  * TaskList Component
- * Displays array of tasks
+ * Displays array of tasks with optional grouping by completion status
  */
 
 import React from 'react'
-import { Task } from '@/src/lib/api/types'
+import { CheckCircle2 } from 'lucide-react'
+import { Task } from '@/lib/api/types'
 import { TaskItem } from './TaskItem'
 
 interface TaskListProps {
@@ -26,18 +27,63 @@ export function TaskList({
     return null
   }
 
+  // Separate completed and incomplete tasks
+  const incompleteTasks = tasks.filter((task) => !task.completed)
+  const completedTasks = tasks.filter((task) => task.completed)
+
   return (
-    <div className="space-y-2">
-      {tasks.map((task) => (
-        <TaskItem
-          key={task.id}
-          task={task}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onComplete={onComplete}
-          isLoading={isLoading}
-        />
-      ))}
+    <div className="space-y-6">
+      {/* Incomplete Tasks Section */}
+      {incompleteTasks.length > 0 && (
+        <div>
+          <div className="mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Active Tasks
+            </h2>
+            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+              {incompleteTasks.length}
+            </span>
+          </div>
+          <div className="space-y-3">
+            {incompleteTasks.map((task) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onComplete={onComplete}
+                isLoading={isLoading}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Completed Tasks Section */}
+      {completedTasks.length > 0 && (
+        <div>
+          <div className="mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Completed
+            </h2>
+            <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+              {completedTasks.length}
+            </span>
+          </div>
+          <div className="space-y-3">
+            {completedTasks.map((task) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onComplete={onComplete}
+                isLoading={isLoading}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

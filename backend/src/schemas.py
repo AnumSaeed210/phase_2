@@ -123,3 +123,15 @@ class SignOutResponse(SQLModel):
     """Response model for POST /auth/signout"""
     message: str
     status: str
+
+
+class TaskStatusUpdate(SQLModel):
+    """Request model for PATCH /api/{user_id}/tasks/{id}/status"""
+    status: str = Field(
+        description="Task status: 'complete' or 'incomplete'"
+    )
+
+    @property
+    def is_complete(self) -> bool:
+        """Check if status is complete"""
+        return self.status.lower() == "complete"

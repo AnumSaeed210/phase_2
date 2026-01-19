@@ -2,40 +2,57 @@
 import os
 import sys
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+
+# Load environment variables BEFORE importing src modules
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
+from fastapi.encoders import jsonable_encoder
+from datetime import datetime
 
 from src.database import create_db_and_tables, engine
 from src.models import SQLModel
-from src.api.tasks import router as tasks_router
-from src.auth.jwt_utils import get_jwt_secret
 
-# Load environment variables
-load_dotenv()
+print("[MAIN] Importing tasks router...")
+from src.api.tasks import router as tasks_router
+print(f"[MAIN] Tasks router imported. Routes: {[r.path for r in tasks_router.routes]}")
+
+print("[MAIN] Importing auth router...")
+from src.api.auth import router as auth_router
+print(f"[MAIN] Auth router imported. Routes: {[r.path for r in auth_router.routes]}")
 
 
 def validate_environment():
     """Validate required environment variables on startup"""
     try:
-        # Validate BETTER_AUTH_SECRET
-        secret = get_jwt_secret()
-        print(f"✓ BETTER_AUTH_SECRET configured (length: {len(secret)} characters)")
-
         # Validate DATABASE_URL
         database_url = os.getenv("DATABASE_URL")
         if not database_url:
             raise ValueError("DATABASE_URL environment variable is not configured")
-        print("✓ DATABASE_URL configured")
+        print("[OK] DATABASE_URL configured")
+
+        # Validate BETTER_AUTH_SECRET (T039-T040)
+        auth_secret = os.getenv("BETTER_AUTH_SECRET")
+        if not auth_secret:
+            raise ValueError(
+                "BETTER_AUTH_SECRET environment variable is not configured. "
+                "This secret is required for JWT signature verification."
+            )
+        if len(auth_secret) < 32:
+            raise ValueError(
+                f"BETTER_AUTH_SECRET must be at least 32 characters long for security. "
+                f"Current length: {len(auth_secret)} characters."
+            )
+        print(f"[OK] BETTER_AUTH_SECRET configured ({len(auth_secret)} characters)")
 
     except ValueError as e:
-        print(f"\n❌ STARTUP VALIDATION FAILED: {str(e)}\n")
+        print(f"\n[ERROR] STARTUP VALIDATION FAILED: {str(e)}\n")
         print("Required environment variables:")
-        print("  - BETTER_AUTH_SECRET (minimum 32 characters)")
         print("  - DATABASE_URL (PostgreSQL connection string)")
-        print("\nGenerate BETTER_AUTH_SECRET with: openssl rand -base64 48")
-        print("See: specs/002-authentication-jwt/ARCHITECTURE.md for setup instructions")
+        print("  - BETTER_AUTH_SECRET (JWT signing secret, minimum 32 characters)")
         sys.exit(1)
 
 
@@ -55,17 +72,19 @@ async def lifespan(app: FastAPI):
 
 
 # Create FastAPI application
+print("[MAIN] Creating FastAPI app...")
 app = FastAPI(
     title="Todo Backend API",
     description="Backend API for multi-user todo task management",
     version="1.0.0",
     lifespan=lifespan
 )
+print("[MAIN] FastAPI app created")
 
 # Configure CORS
 # SECURITY: Restrict to specific origins instead of wildcard
 # In production, set to actual frontend domain(s)
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003,http://localhost:3004,http://localhost:3005,http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,http://localhost:3010").split(",")
 
 app.add_middleware(
     CORSMiddleware,
@@ -77,7 +96,13 @@ app.add_middleware(
 
 
 # Include routers
+print(f"[MAIN] Including auth_router with {len(auth_router.routes)} routes...")
+app.include_router(auth_router)
+
+print(f"[MAIN] Including tasks_router with {len(tasks_router.routes)} routes...")
 app.include_router(tasks_router)
+
+print(f"[MAIN] All app routes: {sorted([r.path for r in app.routes if hasattr(r, 'path')])}")
 
 
 @app.get("/health")

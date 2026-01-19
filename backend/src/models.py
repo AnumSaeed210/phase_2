@@ -5,11 +5,13 @@ from sqlmodel import SQLModel, Field
 
 
 class User(SQLModel, table=True):
-    """User model - represents an authenticated user (from Better Auth)"""
+    """User model - represents a user"""
     __tablename__ = "users"
 
     id: str = Field(primary_key=True)
     email: str = Field(unique=True, index=True)
+    password_hash: str = Field(max_length=255)
+    name: Optional[str] = Field(default=None, max_length=255)
 
 
 class Task(SQLModel, table=True):
@@ -28,6 +30,7 @@ class Task(SQLModel, table=True):
 
     # State
     status: str = Field(default="incomplete")  # Enum: incomplete | complete
+    priority: str = Field(default="medium")  # Enum: low | medium | high
 
     # Timestamps (UTC)
     created_at: datetime = Field(

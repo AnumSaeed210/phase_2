@@ -5,7 +5,7 @@ from sqlmodel import Session
 
 from src.database import get_session
 from src.models import Task
-from src.schemas import TaskCreate, TaskUpdate, TaskResponse, ErrorResponse
+from src.schemas import TaskCreate, TaskUpdate, TaskResponse, ErrorResponse, TaskStatusUpdate
 from src.services import TaskService
 from src.auth.jwt_deps import verify_path_user_id
 from src.auth.auth_context import AuthenticatedUser
@@ -140,8 +140,14 @@ def list_tasks(
             detail={"error": "Invalid sort value. Must be 'priority' or omitted"}
         )
 
-    tasks = service.get_tasks_for_user(user_id, status, sort)
-    return [TaskResponse.model_validate(task) for task in tasks]
+    try:
+        tasks = service.get_tasks_for_user(user_id, status, sort)
+        return [TaskResponse.model_validate(task) for task in tasks]
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={"error": f"Failed to retrieve tasks: {str(e)}", "type": type(e).__name__}
+        )
 
 
 # ============================================================================
@@ -387,6 +393,127 @@ def mark_complete(
 
     # Mark task complete
     task = service.mark_complete(task_id, user_id)
+
+    if not task:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": "Task not found"}
+        )
+
+    return TaskResponse.model_validate(task)
+
+
+# ============================================================================
+# User Story 7: Mark Task Incomplete (PATCH)
+# ============================================================================
+
+@router.patch(
+    "/{user_id}/tasks/{id}/incomplete",
+    status_code=200,
+    response_model=TaskResponse,
+    responses={
+        200: {"description": "Task marked as incomplete"},
+        400: {"model": ErrorResponse, "description": "Invalid task ID"},
+        404: {"model": ErrorResponse, "description": "Task not found or not owned"},
+        401: {"model": ErrorResponse, "description": "Unauthorized"},
+        403: {"model": ErrorResponse, "description": "Forbidden"}
+    }
+)
+def mark_incomplete(
+    user_id: str,
+    id: int,
+    service: TaskService = Depends(get_task_service),
+    current_user: AuthenticatedUser = Depends(verify_path_user_id)
+) -> TaskResponse:
+    """
+    Mark a task as incomplete (uncomplete/reopen a task)
+
+    - **user_id**: Authenticated user ID from JWT context
+    - **id**: Task ID (numeric)
+
+    Changes task status from "complete" back to "incomplete" and updates the updated_at timestamp.
+    Operation is idempotent - safe to call multiple times on same task.
+    Returns updated task with status = "incomplete".
+    Returns 404 if task doesn't exist or belongs to different user.
+    """
+    # Validate task ID
+    try:
+        task_id = int(id)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "Invalid task ID"}
+        )
+
+    # Mark task incomplete
+    task = service.mark_incomplete(task_id, user_id)
+
+    if not task:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": "Task not found"}
+        )
+
+    return TaskResponse.model_validate(task)
+
+
+# ============================================================================
+# User Story 8: Update Task Status (PATCH) - Unified Status Endpoint
+# ============================================================================
+
+@router.patch(
+    "/{user_id}/tasks/{id}/status",
+    status_code=200,
+    response_model=TaskResponse,
+    responses={
+        200: {"description": "Task status updated successfully"},
+        400: {"model": ErrorResponse, "description": "Invalid task ID or status"},
+        404: {"model": ErrorResponse, "description": "Task not found or not owned"},
+        401: {"model": ErrorResponse, "description": "Unauthorized"},
+        403: {"model": ErrorResponse, "description": "Forbidden"}
+    }
+)
+def update_task_status(
+    user_id: str,
+    id: int,
+    status_update: TaskStatusUpdate,
+    service: TaskService = Depends(get_task_service),
+    current_user: AuthenticatedUser = Depends(verify_path_user_id)
+) -> TaskResponse:
+    """
+    Update a task's status to complete or incomplete
+
+    - **user_id**: Authenticated user ID from JWT context
+    - **id**: Task ID (numeric)
+    - **status**: New status ('complete' or 'incomplete')
+
+    Bidirectional status update endpoint. Changes task status and updates the updated_at timestamp.
+    Operation is idempotent - safe to call multiple times on same task.
+    Returns updated task with new status.
+    Returns 404 if task doesn't exist or belongs to different user.
+    """
+    # Validate task ID
+    try:
+        task_id = int(id)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "Invalid task ID"}
+        )
+
+    # Update task status
+    try:
+        task = service.update_status(task_id, user_id, status_update.status)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": str(e)}
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={"error": f"Failed to update task status: {str(e)}"}
+        )
 
     if not task:
         raise HTTPException(

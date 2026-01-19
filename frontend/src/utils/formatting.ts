@@ -6,8 +6,10 @@
 /**
  * Format date to readable string
  */
-export function formatDate(dateString: string | Date): string {
+export function formatDate(dateString: string | Date | undefined): string {
+  if (!dateString) return 'Unknown date'
   const date = typeof dateString === 'string' ? new Date(dateString) : dateString
+  if (isNaN(date.getTime())) return 'Unknown date'
 
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -19,8 +21,10 @@ export function formatDate(dateString: string | Date): string {
 /**
  * Format date and time to readable string
  */
-export function formatDateTime(dateString: string | Date): string {
+export function formatDateTime(dateString: string | Date | undefined): string {
+  if (!dateString) return 'Unknown date'
   const date = typeof dateString === 'string' ? new Date(dateString) : dateString
+  if (isNaN(date.getTime())) return 'Unknown date'
 
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -34,8 +38,10 @@ export function formatDateTime(dateString: string | Date): string {
 /**
  * Format relative time (e.g., "2 hours ago")
  */
-export function formatRelativeTime(dateString: string | Date): string {
+export function formatRelativeTime(dateString: string | Date | undefined): string {
+  if (!dateString) return 'Unknown date'
   const date = typeof dateString === 'string' ? new Date(dateString) : dateString
+  if (isNaN(date.getTime())) return 'Unknown date'
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffSecs = Math.floor(diffMs / 1000)

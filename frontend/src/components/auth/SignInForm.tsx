@@ -1,22 +1,22 @@
-'use client'
+"use client";
 
 /**
  * SignInForm Component
  * Login form for existing users
  */
 
-import { useState } from 'react'
-import { Input } from '@/src/components/common/Input'
-import { Button } from '@/src/components/common/Button'
-import { ErrorAlert } from '@/src/components/common/ErrorAlert'
-import { validateSignInForm } from '@/src/lib/validation/auth'
-import Link from 'next/link'
+import { useState } from "react";
+import { Input } from "@/components/common/Input";
+import { Button } from "@/components/common/Button";
+import { ErrorAlert } from "@/components/common/ErrorAlert";
+import { validateSignInForm } from "@/lib/validation/auth";
+import Link from "next/link";
 
 interface SignInFormProps {
-  onSubmit: (email: string, password: string) => Promise<void>
-  isLoading?: boolean
-  error?: string | null
-  onErrorDismiss?: () => void
+  onSubmit: (email: string, password: string) => Promise<void>;
+  isLoading?: boolean;
+  error?: string | null;
+  onErrorDismiss?: () => void;
 }
 
 export function SignInForm({
@@ -26,38 +26,41 @@ export function SignInForm({
   onErrorDismiss,
 }: SignInFormProps) {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  })
+    email: "",
+    password: "",
+  });
 
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear field error when user starts typing
     if (fieldErrors[name]) {
-      setFieldErrors((prev) => ({ ...prev, [name]: '' }))
+      setFieldErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Validate form
-    const validationError = validateSignInForm(formData.email, formData.password)
+    const validationError = validateSignInForm(
+      formData.email,
+      formData.password
+    );
 
     if (validationError) {
-      setFieldErrors({ [validationError.field]: validationError.message })
-      return
+      setFieldErrors({ [validationError.field]: validationError.message });
+      return;
     }
 
     try {
-      await onSubmit(formData.email, formData.password)
+      await onSubmit(formData.email, formData.password);
     } catch {
       // Error is handled by parent component
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -105,11 +108,14 @@ export function SignInForm({
       </Button>
 
       <p className="text-center text-sm text-gray-600">
-        Don&apos;t have an account?{' '}
-        <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-700">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/signup"
+          className="font-medium text-violet-dark hover:text-violet"
+        >
           Sign Up
         </Link>
       </p>
     </form>
-  )
+  );
 }

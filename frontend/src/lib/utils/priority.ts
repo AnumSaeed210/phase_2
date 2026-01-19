@@ -3,62 +3,70 @@
  * Provides color, icon, and label mappings for task priorities
  */
 
-export type PriorityLevel = 'low' | 'medium' | 'high'
+import {
+  Minus,
+  LucideIcon,
+  ChevronUp,
+  ChevronsDown,
+  ChevronDown,
+} from "lucide-react";
+
+export type PriorityLevel = "low" | "medium" | "high";
 
 export function getPriorityColor(priority?: string): string {
   switch (priority?.toLowerCase()) {
-    case 'high':
-      return '#ff6b6b' // Red
-    case 'medium':
-      return '#c68dff' // Violet
-    case 'low':
-      return '#3d444f' // Slate
+    case "high":
+      return "oklch(70.4% 0.191 22.216)"; // Red
+    case "medium":
+      return "oklch(82.8% 0.189 84.429)"; // Yellow
+    case "low":
+      return "oklch(76.5% 0.177 163.223)"; // Green
     default:
-      return '#c68dff' // Default to medium (violet)
+      return "oklch(82.8% 0.189 84.429)"; // Default to medium (yellow)
   }
 }
 
 export function getPriorityLabel(priority?: string): string {
   switch (priority?.toLowerCase()) {
-    case 'high':
-      return 'High'
-    case 'medium':
-      return 'Medium'
-    case 'low':
-      return 'Low'
+    case "high":
+      return "High";
+    case "medium":
+      return "Medium";
+    case "low":
+      return "Low";
     default:
-      return 'Medium'
+      return "Medium";
   }
 }
 
-export function getPriorityIcon(priority?: string): string {
+export function getPriorityIcon(priority?: string): LucideIcon {
   switch (priority?.toLowerCase()) {
-    case 'high':
-      return '!'
-    case 'medium':
-      return '–'
-    case 'low':
-      return '↓'
+    case "high":
+      return ChevronUp;
+    case "medium":
+      return ChevronDown;
+    case "low":
+      return ChevronsDown;
     default:
-      return '–'
+      return Minus;
   }
 }
 
 export function getPriorityOrder(priority?: string): number {
   switch (priority?.toLowerCase()) {
-    case 'high':
-      return 3
-    case 'medium':
-      return 2
-    case 'low':
-      return 1
+    case "high":
+      return 3;
+    case "medium":
+      return 2;
+    case "low":
+      return 1;
     default:
-      return 2
+      return 2;
   }
 }
 
 export const PRIORITY_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-]
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+];

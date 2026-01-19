@@ -1,95 +1,101 @@
 /**
- * JWT Token Storage
- * Handles JWT token retrieval (stored in HttpOnly cookies)
+ * JWT Token Storage Utility
  *
- * NOTE: JWT tokens are stored in HttpOnly cookies by the backend via Set-Cookie header.
- * This approach prevents XSS attacks as JavaScript cannot access HttpOnly cookies.
- * The browser automatically sends the cookie with credentials: 'include' in fetch requests.
+ * Handles secure storage and retrieval of JWT tokens from browser localStorage.
+ * Provides functions to save, retrieve, and clear JWT tokens.
  */
 
-/**
- * Get JWT token from HttpOnly cookie
- *
- * NOTE: This function cannot directly read HttpOnly cookies due to browser security.
- * Instead, the token is automatically sent by the browser when:
- * - Making fetch requests with credentials: 'include'
- * - The backend sends Set-Cookie header with HttpOnly flag
- *
- * This function exists for reference and to show the pattern.
- * In practice, token management is handled by the browser and backend.
- */
-export function getJWTToken(): string | null {
-  // HttpOnly cookies cannot be read by JavaScript
-  // The browser automatically includes them in fetch requests
-  // with credentials: 'include'
+const TOKEN_KEY = 'auth_token';
+const USER_KEY = 'auth_user';
 
-  // For debugging or verification purposes only:
-  // Check if we're in a browser environment
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  // Token is automatically sent by browser in fetch requests
-  // No explicit retrieval needed
-  return null
+export interface StoredUser {
+  id: string;
+  email: string;
+  name?: string;
 }
 
 /**
- * Check if JWT token exists in cookie
- * Used to determine if user is authenticated
+ * Save JWT token and user data to localStorage
  */
-export function hasJWTToken(): boolean {
-  // Token existence check is implicit:
-  // If the user is authenticated, their browser has the token cookie
-  // Subsequent fetch requests will include it automatically
-
-  if (typeof window === 'undefined') {
-    return false
-  }
-
-  // A better approach: Check if API requests are successful
-  // Or maintain auth state in React Context
-  return false
-}
-
-/**
- * Clear JWT token (sign out)
- * The server will clear the HttpOnly cookie on sign-out request
- */
-export function clearJWTToken(): void {
-  // Token is cleared server-side via Set-Cookie with empty value
-  // and Max-Age=0 or expires in past
-
-  // No client-side action needed for HttpOnly cookies
-  // Just ensure the logout endpoint is called
-}
-
-/**
- * Decode JWT token to extract claims
- * NOTE: This is for verification only - never use decoded token for authorization
- * Always validate tokens server-side
- */
-export function decodeJWT(token: string): Record<string, unknown> | null {
+export function saveToken(token: string, user?: StoredUser): void {
   try {
-    // JWT format: header.payload.signature
-    const parts = token.split('.')
-    if (parts.length !== 3) return null
-
-    // Decode payload (second part)
-    const payload = parts[1]
-    const decoded = JSON.parse(atob(payload))
-    return decoded
-  } catch {
-    return null
+    localStorage.setItem(TOKEN_KEY, token);
+    if (user) {
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+    }
+  } catch (error) {
+    console.error('Failed to save token:', error);
   }
 }
 
 /**
- * Extract user ID from JWT token
- * Used in API calls to identify the user
+ * Retrieve JWT token from localStorage
  */
-export function extractUserIdFromToken(token: string): string | null {
-  const decoded = decodeJWT(token)
-  if (!decoded || !decoded.sub) return null
-  return decoded.sub as string
+export function getToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch (error) {
+    console.error('Failed to retrieve token:', error);
+    return null;
+  }
+}
+
+/**
+ * Retrieve stored user data from localStorage
+ */
+export function getUser(): StoredUser | null {
+  try {
+    const userJson = localStorage.getItem(USER_KEY);
+    return userJson ? JSON.parse(userJson) : null;
+  } catch (error) {
+    console.error('Failed to retrieve user:', error);
+    return null;
+  }
+}
+
+/**
+ * Clear JWT token and user data from localStorage
+ */
+export function clearToken(): void {
+  try {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+  } catch (error) {
+    console.error('Failed to clear token:', error);
+  }
+}
+
+/**
+ * Check if a valid token exists in localStorage
+ */
+export function hasToken(): boolean {
+  return getToken() !== null;
+}
+
+/**
+ * Decode JWT token to extract claims (basic decoding without verification)
+ * WARNING: Only use for UI purposes. Always validate on backend.
+ */
+export function decodeToken(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const decoded = JSON.parse(atob(parts[1]));
+    return decoded;
+  } catch (error) {
+    console.error('Failed to decode token:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if token is expired (frontend check only, backend validates)
+ */
+export function isTokenExpired(token: string): boolean {
+  const decoded = decodeToken(token);
+  if (!decoded || !decoded.exp) return true;
+
+  const expirationTime = (decoded.exp as number) * 1000; // Convert to milliseconds
+  return Date.now() >= expirationTime;
 }

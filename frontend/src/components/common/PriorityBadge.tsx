@@ -3,6 +3,22 @@
 import { getPriorityColor, getPriorityLabel, getPriorityIcon } from '@/lib/utils/priority'
 
 /**
+ * Get icon size based on badge size
+ */
+function getIconSize(size: 'sm' | 'md' | 'lg'): number {
+  switch (size) {
+    case 'sm':
+      return 14
+    case 'md':
+      return 16
+    case 'lg':
+      return 20
+    default:
+      return 16
+  }
+}
+
+/**
  * Props for the PriorityBadge component
  */
 interface PriorityBadgeProps {
@@ -47,7 +63,8 @@ export function PriorityBadge({
 }: PriorityBadgeProps) {
   const color = getPriorityColor(priority)
   const label = getPriorityLabel(priority)
-  const icon = getPriorityIcon(priority)
+  const IconComponent = getPriorityIcon(priority)
+  const iconSize = getIconSize(size)
 
   const sizeClasses = {
     sm: 'px-2 py-1 text-xs',
@@ -63,7 +80,7 @@ export function PriorityBadge({
       role="badge"
       aria-label={`Priority: ${label}`}
     >
-      {showIcon && <span>{icon}</span>}
+      {showIcon && <IconComponent size={iconSize} strokeWidth={2.5} />}
       {showText && <span>{label}</span>}
     </div>
   )

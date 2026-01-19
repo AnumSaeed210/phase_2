@@ -6,9 +6,9 @@
  */
 
 import { useState } from 'react'
-import { SignInForm } from '@/src/components/auth/SignInForm'
-import { useAuth } from '@/src/lib/auth/useAuth'
-import { LoadingSpinner } from '@/src/components/common/LoadingSpinner'
+import { SignInForm } from '@/components/auth/SignInForm'
+import { useAuth } from '@/lib/auth/useAuth'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 
 export default function SignInPage() {
   const { signIn, isLoading, error, clearError } = useAuth()

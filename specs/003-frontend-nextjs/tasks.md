@@ -212,16 +212,16 @@
 
 **Independent Test**: Can be fully verified by (1) creating a task (US4), (2) clicking edit on task, (3) updating title/description, (4) confirming PUT request, (5) verifying task list updated without refresh
 
-- [x] T043 [P] [US5] Create `frontend/src/app/(dashboard)/tasks/[taskId]/page.tsx` with:
+- [] T043 [P] [US5] Create `frontend/src/app/(dashboard)/tasks/[taskId]/page.tsx` with:
   - Fetch single task on load
   - TaskForm component in edit mode (populated with task data)
   - useTasks.updateTask on form submit
   - Redirect to /tasks on success
   - Show 404 if task not found
-- [x] T044 [US5] Update TaskItem component with:
+- [] T044 [US5] Update TaskItem component with:
   - Edit button that navigates to /tasks/{id}
   - Show error if task is deleted while editing
-- [x] T045 [US5] Extend useTasks hook with:
+- [] T045 [US5] Extend useTasks hook with:
   - updateTask function (PUT /api/{user_id}/tasks/{id})
   - Handle 404 (task belongs to different user)
   - Optimistic UI update
@@ -236,11 +236,11 @@
 
 **Independent Test**: Can be fully verified by (1) creating a task (US4), (2) clicking completion checkbox, (3) confirming PATCH request, (4) verifying UI updates, (5) clicking again to mark incomplete
 
-- [x] T046 [P] [US6] Update TaskItem component with:
+- [] T046 [P] [US6] Update TaskItem component with:
   - Completion checkbox/button
   - Visual styling for completed tasks (strikethrough)
   - Disable during request
-- [x] T047 [US6] Extend useTasks hook with:
+- [] T047 [US6] Extend useTasks hook with:
   - completeTask function (PATCH /api/{user_id}/tasks/{id}/complete)
   - Optimistic UI update (toggle checkbox immediately)
   - Error rollback if API fails
@@ -255,11 +255,11 @@
 
 **Independent Test**: Can be fully verified by (1) creating a task (US4), (2) clicking delete button, (3) confirming deletion, (4) verifying task removed from list, (5) verifying DELETE request sent
 
-- [x] T048 [P] [US7] Update TaskItem component with:
+- [] T048 [P] [US7] Update TaskItem component with:
   - Delete button with confirmation dialog
   - Disable button during deletion
   - Show error if deletion fails
-- [x] T049 [US7] Extend useTasks hook with:
+- [] T049 [US7] Extend useTasks hook with:
   - deleteTask function (DELETE /api/{user_id}/tasks/{id})
   - Remove task from list optimistically
   - Error rollback if API fails
@@ -328,18 +328,18 @@
 
 **Independent Test**: Can be fully verified by (1) navigating to /tasks without signin, (2) confirming redirect to /auth/signin, (3) simulating 401 response, (4) verifying automatic redirect, (5) verifying 404 responses don't leak user data
 
-- [ ] T057 [P] [US10] Enhance middleware.ts to:
+- [x] T057 [P] [US10] Enhance middleware.ts to:
   - Check for JWT token on protected routes
   - Redirect to /auth/signin if missing
   - Redirect to /auth/signin if invalid
-  - Allow public routes (/auth/*)
-- [ ] T058 [P] [US10] Update API client to:
+  - Allow public routes (/auth/\*)
+- [x] T058 [P] [US10] Update API client to:
   - Detect 401 responses from backend
   - Clear JWT token on 401
   - Redirect to /auth/signin on 401
   - Show user-friendly error message
-- [ ] T059 [US10] Create `frontend/src/components/auth/ProtectedRoute.tsx` wrapper for protected pages
-- [ ] T060 [US10] Update auth context to:
+- [x] T059 [US10] Create `frontend/src/components/auth/ProtectedRoute.tsx` wrapper for protected pages
+- [x] T060 [US10] Update auth context to:
   - Handle 401 responses globally
   - Clear auth state
   - Trigger redirect to signin
@@ -428,9 +428,11 @@
 ### Parallel Opportunities Within Phases
 
 **Phase 1 (Setup)**:
+
 - T003, T004, T006, T007 can run in parallel (different files)
 
 **Phase 2 (Foundational)**:
+
 - T009-T023: Many tasks marked [P] can run in parallel
   - Auth infrastructure (T009-T014) parallel
   - UI components (T019) parallel
@@ -438,6 +440,7 @@
   - After foundational complete, all user story implementation can proceed in parallel by different team members
 
 **Within Each User Story**:
+
 - Component creation tasks marked [P] can run in parallel
 - Tests marked [P] can run in parallel before implementation
 
@@ -504,22 +507,22 @@ After Phase 1, add:
 
 ## Task Execution Summary
 
-| Phase | Focus | Task Count | Blocking? | Status |
-|-------|-------|-----------|-----------|--------|
-| 1 | Setup | 8 | No | Ready ✅ |
-| 2 | Foundational | 15 | **YES** | Blocks all stories |
-| 3 | US1 Sign-Up | 5 | No | After Phase 2 |
-| 4 | US2 Sign-In | 4 | No | After Phase 2 |
-| 5 | US3 Task List | 6 | No | After Phase 2 |
-| 6 | US4 Create | 4 | No | After Phase 2 |
-| 7 | US5 Edit | 3 | No | After Phase 2 |
-| 8 | US6 Complete | 2 | No | After Phase 2 |
-| 9 | US7 Delete | 2 | No | After Phase 2 |
-| 10 | US8 Sign-Out | 3 | No | After Phase 2 |
-| 11 | US9 Responsive | 4 | No | After Phase 2 |
-| 12 | US10 Auth | 4 | No | After Phase 2 |
-| 13 | Polish | 9 | No | After stories |
-| **TOTAL** | | **69 tasks** | | |
+| Phase     | Focus          | Task Count   | Blocking? | Status             |
+| --------- | -------------- | ------------ | --------- | ------------------ |
+| 1         | Setup          | 8            | No        | Ready ✅           |
+| 2         | Foundational   | 15           | **YES**   | Blocks all stories |
+| 3         | US1 Sign-Up    | 5            | No        | After Phase 2      |
+| 4         | US2 Sign-In    | 4            | No        | After Phase 2      |
+| 5         | US3 Task List  | 6            | No        | After Phase 2      |
+| 6         | US4 Create     | 4            | No        | After Phase 2      |
+| 7         | US5 Edit       | 3            | No        | After Phase 2      |
+| 8         | US6 Complete   | 2            | No        | After Phase 2      |
+| 9         | US7 Delete     | 2            | No        | After Phase 2      |
+| 10        | US8 Sign-Out   | 3            | No        | After Phase 2      |
+| 11        | US9 Responsive | 4            | No        | After Phase 2      |
+| 12        | US10 Auth      | 4            | No        | After Phase 2      |
+| 13        | Polish         | 9            | No        | After stories      |
+| **TOTAL** |                | **69 tasks** |           |                    |
 
 ---
 
@@ -538,9 +541,9 @@ Examples from this task list:
 ✅ `- [ ] T024 [P] [US4] Create sign-up form validation in frontend/src/lib/validation/auth.ts` (parallelizable within story)
 
 All tasks include:
+
 1. Checkbox `- [ ]`
 2. Task ID (T001-T069)
 3. Parallelization marker [P] (where applicable)
 4. Story label [US1]-[US10] (where applicable)
 5. Clear description with file path
-

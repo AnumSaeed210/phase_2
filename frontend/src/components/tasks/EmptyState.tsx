@@ -5,7 +5,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Button } from '@/src/components/common/Button'
+import { Button } from '@/components/common/Button'
 
 interface EmptyStateProps {
   onCreateClick?: () => void

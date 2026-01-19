@@ -1,22 +1,24 @@
-'use client'
+"use client";
 
 /**
  * TaskItem Component
  * Single task display with actions
  */
 
-import React, { useState } from 'react'
-import { Task } from '@/lib/api/types'
-import { formatRelativeTime } from '@/utils/formatting'
-import { Button } from '@/components/common/Button'
-import { PriorityBadge } from '@/components/common/PriorityBadge'
+import React, { useState } from "react";
+import { Trash2, Pencil, X, Check } from "lucide-react";
+import { Task } from "@/lib/api/types";
+import { formatRelativeTime } from "@/utils/formatting";
+import { Button } from "@/components/common/Button";
+import { PriorityBadge } from "@/components/common/PriorityBadge";
+import { AnimatedCheckbox } from "@/components/common/AnimatedCheckbox";
 
 interface TaskItemProps {
-  task: Task
-  onEdit?: (taskId: string) => void
-  onDelete?: (taskId: string) => Promise<void>
-  onComplete?: (taskId: string) => Promise<void>
-  isLoading?: boolean
+  task: Task;
+  onEdit?: (taskId: string) => void;
+  onDelete?: (taskId: string) => Promise<void>;
+  onComplete?: (taskId: string) => Promise<void>;
+  isLoading?: boolean;
 }
 
 export function TaskItem({
@@ -26,141 +28,141 @@ export function TaskItem({
   onComplete,
   isLoading = false,
 }: TaskItemProps) {
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [isCompleting, setIsCompleting] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleDelete = async () => {
-    if (!onDelete) return
+    if (!onDelete) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await onDelete(task.id)
-      setShowDeleteConfirm(false)
+      await onDelete(task.id);
+      setShowDeleteConfirm(false);
     } catch {
       // Error is handled by parent
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   const handleComplete = async () => {
-    if (!onComplete) return
+    if (!onComplete) return;
 
-    setIsCompleting(true)
+    setIsCompleting(true);
     try {
-      await onComplete(task.id)
+      await onComplete(task.id);
     } catch {
       // Error is handled by parent
     } finally {
-      setIsCompleting(false)
+      setIsCompleting(false);
     }
-  }
+  };
 
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-4 hover:shadow-sm transition-shadow">
-      {/* Completion Checkbox */}
-      <div className="flex-shrink-0 pt-1">
-        <input
-          type="checkbox"
-          checked={task.completed}
-          onChange={handleComplete}
-          disabled={isCompleting || isLoading}
-          className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:opacity-50"
-          aria-label="Mark task complete"
-        />
-      </div>
+    <div
+      className={`group relative rounded-xl border transition-all duration-200 ${
+        task.completed
+          ? "border-gray-200 bg-gray-50 hover:bg-gray-100"
+          : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
+      }`}
+    >
+      <div className="flex items-start gap-4 p-4">
+        {/* Completion Checkbox */}
+        <div className="flex-shrink-0 pt-1">
+          <AnimatedCheckbox
+            id={`task-${task.id}`}
+            checked={task.completed}
+            onChange={handleComplete}
+            disabled={isCompleting || isLoading}
+            ariaLabel="Mark task complete"
+          />
+        </div>
 
-      {/* Task Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <h3
-            className={`text-base font-medium ${
-              task.completed
-                ? 'text-gray-400 line-through'
-                : 'text-gray-900'
-            }`}
-          >
-            {task.title}
-          </h3>
-          {task.priority && (
-            <PriorityBadge priority={task.priority} size="sm" showText={false} />
+        {/* Task Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-start gap-2 sm:items-center">
+            <h3
+              className={`text-base font-semibold transition-colors ${
+                task.completed ? "text-gray-400 line-through" : "text-gray-900"
+              }`}
+            >
+              {task.title}
+            </h3>
+            {task.priority && (
+              <PriorityBadge
+                priority={task.priority}
+                size="sm"
+                showText={true}
+              />
+            )}
+          </div>
+
+          {task.description && (
+            <p
+              className={`mt-2 text-sm leading-relaxed transition-colors ${
+                task.completed ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              {task.description}
+            </p>
+          )}
+
+          <p className="mt-3 text-xs text-gray-500">
+            Created {formatRelativeTime(task.createdAt)}
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex-shrink-0 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:opacity-100">
+          {onEdit && (
+            <button
+              onClick={() => onEdit(task.id)}
+              disabled={isLoading || isDeleting}
+              className="rounded-lg p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Edit task"
+              aria-label="Edit task"
+            >
+              <Pencil size={18} strokeWidth={2} />
+            </button>
+          )}
+
+          {onDelete && (
+            <>
+              {showDeleteConfirm ? (
+                <div className="absolute right-4 top-16 z-20 flex gap-1 rounded-lg border border-red-200 bg-white p-2 shadow-lg">
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="flex items-center gap-1 rounded px-2 py-1 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    title="Confirm delete"
+                  >
+                    <Check size={16} />
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="flex items-center gap-1 rounded px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+                    title="Cancel delete"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  disabled={isLoading || isDeleting}
+                  className="rounded-lg p-2 text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Delete task"
+                  aria-label="Delete task"
+                >
+                  <Trash2 size={18} strokeWidth={2} />
+                </button>
+              )}
+            </>
           )}
         </div>
-        {task.description && (
-          <p
-            className={`mt-1 text-sm ${
-              task.completed ? 'text-gray-400' : 'text-gray-600'
-            }`}
-          >
-            {task.description}
-          </p>
-        )}
-        <p className="mt-2 text-xs text-gray-500">
-          Created {formatRelativeTime(task.createdAt)}
-        </p>
       </div>
-
-      {/* Actions */}
-      <div className="flex-shrink-0 flex gap-2">
-        {onEdit && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onEdit(task.id)}
-            disabled={isLoading || isDeleting}
-          >
-            Edit
-          </Button>
-        )}
-
-        {onDelete && (
-          <>
-            {showDeleteConfirm ? (
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={handleDelete}
-                isLoading={isDeleting}
-                disabled={isDeleting}
-              >
-                Confirm
-              </Button>
-            ) : (
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => setShowDeleteConfirm(true)}
-                disabled={isLoading || isDeleting}
-              >
-                Delete
-              </Button>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Delete Confirmation */}
-      {showDeleteConfirm && !isDeleting && (
-        <div className="absolute right-0 top-12 z-10 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          <p>Are you sure?</p>
-          <div className="mt-2 flex gap-2">
-            <button
-              onClick={handleDelete}
-              className="text-red-600 hover:text-red-700 font-medium"
-              disabled={isDeleting}
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              className="text-gray-600 hover:text-gray-700"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </div>
-  )
+  );
 }

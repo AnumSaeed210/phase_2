@@ -7,14 +7,14 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { useAuth } from '@/src/lib/auth/useAuth'
-import { useTasks } from '@/src/lib/hooks/useTasks'
-import { TaskForm } from '@/src/components/tasks/TaskForm'
-import { CreateTaskRequest, Task } from '@/src/lib/api/types'
-import { Container } from '@/src/components/layout/Container'
-import { LoadingSpinner } from '@/src/components/common/LoadingSpinner'
-import { ErrorAlert } from '@/src/components/common/ErrorAlert'
-import { apiClient } from '@/src/lib/api/client'
+import { useAuth } from '@/lib/auth/useAuth'
+import { useTasks } from '@/lib/hooks/useTasks'
+import { TaskForm } from '@/components/tasks/TaskForm'
+import { CreateTaskRequest, Task } from '@/lib/api/types'
+import { Container } from '@/components/layout/Container'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { ErrorAlert } from '@/components/common/ErrorAlert'
+import { apiClient } from '@/lib/api/client'
 
 export default function EditTaskPage() {
   const router = useRouter()

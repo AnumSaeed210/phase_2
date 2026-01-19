@@ -7,12 +7,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/src/lib/auth/useAuth'
-import { useTasks } from '@/src/lib/hooks/useTasks'
-import { TaskForm } from '@/src/components/tasks/TaskForm'
-import { CreateTaskRequest } from '@/src/lib/api/types'
-import { Container } from '@/src/components/layout/Container'
-import { LoadingSpinner } from '@/src/components/common/LoadingSpinner'
+import { useAuth } from '@/lib/auth/useAuth'
+import { useTasks } from '@/lib/hooks/useTasks'
+import { TaskForm } from '@/components/tasks/TaskForm'
+import { CreateTaskRequest } from '@/lib/api/types'
+import { Container } from '@/components/layout/Container'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 
 export default function CreateTaskPage() {
   const router = useRouter()
